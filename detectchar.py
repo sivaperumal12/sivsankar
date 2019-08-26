@@ -1,4 +1,4 @@
-# DetectChars.py
+#DetectChars.py
 import os
 import cv2
 import numpy as np
