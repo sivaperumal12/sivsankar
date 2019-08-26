@@ -1,4 +1,3 @@
-#DetectChars.py
 import os
 import cv2
 import numpy as np
@@ -9,7 +8,7 @@ import Preprocess
 import PossibleChar
 # module level variables 
 kNearest = cv2.ml.KNearest_create()
-        # constants for checkIfPossibleChar, this checks one possible char only (does not compare to another char)
+        # constants for checkIfPossibleChar, this checks one possible char only 
 MIN_PIXEL_WIDTH = 2
 MIN_PIXEL_HEIGHT = 8
 
@@ -35,32 +34,32 @@ RESIZED_CHAR_IMAGE_HEIGHT = 30
 
 MIN_CONTOUR_AREA = 100
 def loadKNNDataAndTrainKNN():
-    allContoursWithData = []                # declare empty lists,
-    validContoursWithData = []              # we will fill these shortly
+    allContoursWithData = []               
+    validContoursWithData = []             
 
     try:
-        npaClassifications = np.loadtxt("classifications.txt", np.float32)                  # read in training classifications
-    except:                                                                                 # if file could not be opened
-        print("error, unable to open classifications.txt, exiting program\n")  # show error message
+        npaClassifications = np.loadtxt("classifications.txt", 
+    except:                                                                                 
+        print("error, unable to open classifications.txt, exiting program\n") 
         os.system("pause")
         return False                                                                        # and return False
     # end try
 
     try:
-        npaFlattenedImages = np.loadtxt("flattened_images.txt", np.float32)                 # read in training images
-    except:                                                                                 # if file could not be opened
+        npaFlattenedImages = np.loadtxt("flattened_images.txt", np.float32)                 
+    except:                                                                                 
         print("error, unable to open flattened_images.txt, exiting program\n")  # show error message
         os.system("pause")
         return False                                                                        # and return False
     # end try
 
-    npaClassifications = npaClassifications.reshape((npaClassifications.size, 1))       # reshape numpy array to 1d, necessary to pass to call to train
+    npaClassifications = npaClassifications.reshape((npaClassifications.size, 1))       
 
     kNearest.setDefaultK(1)                                                             # set default K to 1
 
     kNearest.train(npaFlattenedImages, cv2.ml.ROW_SAMPLE, npaClassifications)           # train KNN object
 
-    return True                             # if we got here training was successful so return true
+    return True                             
 # end function
 
 def detectCharsInPlates(listOfPossiblePlates):
@@ -83,7 +82,6 @@ def detectCharsInPlates(listOfPossiblePlates):
             cv2.imshow("5b", possiblePlate.imgGrayscale)
             cv2.imshow("5c", possiblePlate.imgThresh)
         # end if # show steps 
-                # increase size of plate image for easier viewing and char detection
         possiblePlate.imgThresh = cv2.resize(possiblePlate.imgThresh, (0, 0), fx = 1.6, fy = 1.6)
 
                 # threshold again to eliminate any gray areas
@@ -92,9 +90,7 @@ def detectCharsInPlates(listOfPossiblePlates):
         if Main.showSteps == True: # show steps 
             cv2.imshow("5d", possiblePlate.imgThresh)
         # end if # show steps 
-
                 # find all possible chars in the plate,
-                # this function first finds all contours, then only includes contours that could be chars (without comparison to other chars yet)
         listOfPossibleCharsInPlate = findPossibleCharsInPlate(possiblePlate.imgGrayscale, possiblePlate.imgThresh)
 
         if Main.showSteps == True: # show steps 
@@ -149,7 +145,7 @@ def detectCharsInPlates(listOfPossiblePlates):
 
         for i in range(0, len(listOfListsOfMatchingCharsInPlate)):                              # within each list of matching chars
             listOfListsOfMatchingCharsInPlate[i].sort(key = lambda matchingChar: matchingChar.intCenterX)        # sort chars from left to right
-            listOfListsOfMatchingCharsInPlate[i] = removeInnerOverlappingChars(listOfListsOfMatchingCharsInPlate[i])              # and remove inner overlapping chars
+            listOfListsOfMatchingCharsInPlate[i] = removeInnerOverlappingChars(listOfListsOfMatchingCharsInPlate[i])              
         # end for
 
         if Main.showSteps == True: # show steps 
@@ -228,7 +224,7 @@ def findPossibleCharsInPlate(imgGrayscale, imgThresh):
     for contour in contours:                        # for each contour
         possibleChar = PossibleChar.PossibleChar(contour)
 
-        if checkIfPossibleChar(possibleChar):              # if contour is a possible char, note this does not compare to other chars (yet) . . .
+        if checkIfPossibleChar(possibleChar):              # if contour is a possible char, note this does not compare to other chars
             listOfPossibleChars.append(possibleChar)       # add to list of possible chars
         # end if
     # end if
@@ -237,8 +233,7 @@ def findPossibleCharsInPlate(imgGrayscale, imgThresh):
 # end function
 
 def checkIfPossibleChar(possibleChar):
-            # this function is a 'first pass' that does a rough check on a contour to see if it could be a char,
-            # note that we are not (yet) comparing the char to other chars to look for a group
+           
     if (possibleChar.intBoundingRectArea > MIN_PIXEL_AREA and
         possibleChar.intBoundingRectWidth > MIN_PIXEL_WIDTH and possibleChar.intBoundingRectHeight > MIN_PIXEL_HEIGHT and
         MIN_ASPECT_RATIO < possibleChar.fltAspectRatio and possibleChar.fltAspectRatio < MAX_ASPECT_RATIO):
