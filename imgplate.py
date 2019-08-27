@@ -1,5 +1,3 @@
-# DetectPlates.py
-
 import cv2
 import numpy as np
 import math
@@ -7,9 +5,9 @@ import Main
 import random
 
 import Preprocess
-import DetectChars
-import PossiblePlate
-import PossibleChar
+import imgChars
+import PimgPlate
+import PimgChar
 
 # module level variables 
 PLATE_WIDTH_PADDING_FACTOR = 1.3
@@ -41,8 +39,7 @@ def detectPlatesInScene(imgOriginalScene):
     listOfPossibleCharsInScene = findPossibleCharsInScene(imgThreshScene)
 
     if Main.showSteps == True: # show steps 
-        print("step 2 - len(listOfPossibleCharsInScene) = " + str(
-            len(listOfPossibleCharsInScene)))  # 131 with MCLRNF1 image
+        print("step 2 - len(listOfPossibleCharsInScene) = " + str(len(listOfPossibleCharsInScene)))  
 
         imgContours = np.zeros((height, width, 3), np.uint8)
 
@@ -55,9 +52,6 @@ def detectPlatesInScene(imgOriginalScene):
         cv2.drawContours(imgContours, contours, -1, Main.SCALAR_WHITE)
         cv2.imshow("2b", imgContours)
     # end if # show steps 
-
-            # given a list of all possible chars, find groups of matching chars
-            # in the next steps each group of matching chars will attempt to be recognized as a plate
     listOfListsOfMatchingCharsInScene = DetectChars.findListOfListsOfMatchingChars(listOfPossibleCharsInScene)
 
     if Main.showSteps == True: # show steps 
@@ -91,7 +85,7 @@ def detectPlatesInScene(imgOriginalScene):
         # end if
     # end for
 
-    print("\n" + str(len(listOfPossiblePlates)) + " possible plates found")  # 13 with MCLRNF1 image
+    print("\n" + str(len(listOfPossiblePlates)) + " possible plates found")  
 
     if Main.showSteps == True: # show steps 
         print("\n")
@@ -139,15 +133,15 @@ def findPossibleCharsInScene(imgThresh):
 
         possibleChar = PossibleChar.PossibleChar(contours[i])
 
-        if DetectChars.checkIfPossibleChar(possibleChar):                   # if contour is a possible char, note this does not compare to other chars (yet) . . .
-            intCountOfPossibleChars = intCountOfPossibleChars + 1           # increment count of possible chars
-            listOfPossibleChars.append(possibleChar)                        # and add to list of possible chars
+        if DetectChars.checkIfPossibleChar(possibleChar):                   
+            intCountOfPossibleChars = intCountOfPossibleChars + 1          
+            listOfPossibleChars.append(possibleChar)                        
         # end if
     # end for
 
     if Main.showSteps == True: # show steps 
-        print("\nstep 2 - len(contours) = " + str(len(contours)))  # 2362 with MCLRNF1 image
-        print("step 2 - intCountOfPossibleChars = " + str(intCountOfPossibleChars))  # 131 with MCLRNF1 image
+        print("\nstep 2 - len(contours) = " + str(len(contours))) 
+        print("step 2 - intCountOfPossibleChars = " + str(intCountOfPossibleChars))  
         cv2.imshow("2a", imgContours)
     # end if # show steps ..............
 
