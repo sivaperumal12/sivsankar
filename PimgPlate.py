@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 ...........................
-class PossiblePlate:
+class PimgPlate:
     # constructor ................................
     def __init__(self):
         self.imgPlate = None
